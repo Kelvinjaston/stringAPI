@@ -1,5 +1,5 @@
 # STAGE 1: BUILDER (Compiles the Java code using Maven)
-FROM maven:3.8.6-openjdk-17-slim AS builder
+FROM maven:3-openjdk-17 AS builder  # <-- This is the fixed, stable tag
 
 WORKDIR /app
 

@@ -11,7 +11,7 @@ COPY src ./src
 RUN mvn clean package -DskipTests
 
 # STAGE 2: RUNNER (Uses a minimal JRE image to run the JAR)
-FROM openjdk:17-jre-slim
+FROM eclipse-temurin:17-jre-alpine  # <-- THIS LINE IS THE FIX
 
 WORKDIR /app
 

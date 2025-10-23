@@ -5,4 +5,5 @@ import stringAnalyzer.stringAPI.stringAnalysisModel.StringAnalysis;
 
 public interface StringAnalysisRepository extends JpaRepository<StringAnalysis,String> {
 
+
 }

@@ -10,7 +10,6 @@ import stringAnalyzer.stringAPI.stringAnalysisModel.StringProperties;
 import static stringAnalyzer.stringAPI.exception.CustomExceptions.ConflictException;
 import static stringAnalyzer.stringAPI.exception.CustomExceptions.NotFoundException;
 
-
 import java.time.Instant;
 import java.util.List;
 import java.util.Map;
@@ -64,19 +63,24 @@ public class StringAnalyzerService {
         return DigestUtils.sha256Hex(value);
     }
     @Transactional
-    public StringAnalysis createOrAnalyzeString(String value){
+    public StringAnalysis createOrAnalyzeString(String value) {
         String hash = sha256Hash(value);
-        if (stringAnalysisRepository.existsById(hash)){
-            throw new ConflictException("String analysis for value already exists: " + value);
+
+        StringAnalysis existing = stringAnalysisRepository.findById(hash).orElse(null);
+
+        if (existing != null) {
+            existing.setCreatedAt(Instant.now());
+            return existing;
+        } else {
+            StringProperties properties = calculateProperties(value, hash);
+            StringAnalysis analysis = StringAnalysis.builder()
+                    .id(hash)
+                    .value(value)
+                    .properties(properties)
+                    .createdAt(Instant.now())
+                    .build();
+            return stringAnalysisRepository.save(analysis);
         }
-        StringProperties properties = calculateProperties(value,hash);
-        StringAnalysis analysis = StringAnalysis.builder()
-                .id(hash)
-                .value(value)
-                .properties(properties)
-                .createdAt(Instant.now())
-                .build();
-        return stringAnalysisRepository.save(analysis);
     }
     @Transactional(readOnly = true)
     public StringAnalysis getByValue(String value){
